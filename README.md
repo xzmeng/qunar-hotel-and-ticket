@@ -34,6 +34,17 @@
 运行爬虫
 ------
     $ python3 crawl.py
+初始化Django数据库
+----------------
+    $ python3 manage.py makemigrations
+    $ python3 manage.py migrate
+
+MongoDB导入关系数据库数据库
+------------------------
+    $ python3 init_db.py
+运行服务器
+--------
+    $ python3 manage.py runserver
 
 备注
 ---

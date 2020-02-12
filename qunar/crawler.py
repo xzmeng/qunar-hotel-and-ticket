@@ -47,15 +47,21 @@ class Crawler:
         self.log.info(f'爬取结束,共爬取{self.crawled_count}条数据,保存{self.saved_count}条数据.')
 
     def get_json(self):
-        if self.method == 'GET':
-            r = requests.get(self.api_url,
-                             headers=self.headers,
-                             params=self.params)
-        else:
-            r = requests.post(self.api_url,
-                              headers=self.headers,
-                              json=self.json)
-        return r.json()
+        json = None
+        try:
+            if self.method == 'GET':
+                r = requests.get(self.api_url,
+                                 headers=self.headers,
+                                 params=self.params)
+            else:
+                r = requests.post(self.api_url,
+                                  headers=self.headers,
+                                  json=self.json)
+            json = r.json()
+            assert json.get('data') is not None
+        except KeyError:
+            self.log.info(str('返回的json数据有误: ' + str(json)))
+        return json
 
     def save_one_to_mongo(self, document, pk):
         self.crawled_count += 1
@@ -64,7 +70,7 @@ class Crawler:
             self.collection.insert_one(document)
             self.saved_count += 1
         else:
-            self.log.debug(f'丢弃, {pk}: {document[pk]}')
+            self.log.debug(f'去重丢弃, {pk}: {document[pk]}')
         pass
 
     def save_list_to_mongo(self, documents, pk):
@@ -75,17 +81,24 @@ class Crawler:
 class HotelCrawler(Crawler):
     """根据城市名字爬取酒店列表"""
 
-    def __init__(self, city):
+    def __init__(self, city, crawl_comment=False):
         super().__init__(city)
         self.api_url = 'https://hotel.qunar.com/napi/list'
         self.city = city
         self.keyword = city
+        self.crawl_comment = crawl_comment
         self.num = 20  # hotels per page
         self.collection = self.mongo_database.hotels
 
     def _crawl(self):
         limit = settings.HOTEL_CRAWLER_MAX_COUNT_PER_KEYWORD
-        total_count = self.get_hotel_count()
+        try:
+            total_count = self.get_hotel_count()
+        except Exception as e:
+            self.log.info(f'获取{self.city}酒店数量失败:{str(e)},'
+                          + '取默认值1000')
+            total_count = 1000
+
         if limit > 0:
             hotel_count = min(total_count, limit)
         else:
@@ -93,10 +106,20 @@ class HotelCrawler(Crawler):
 
         self.log.info(f'一共找到{total_count}个酒店,将要爬取前{hotel_count}个.')
         for start in range(0, hotel_count, self.num):
-            self.log.info(f'正在爬取第{start}-{start + self.num}个(共{hotel_count}个).')
-            hotels = self.get_hotels(start)
-            self.save_list_to_mongo(hotels, 'seqNo')
-            time.sleep(settings.REQUEST_DELAY)
+            try:
+                self.log.info(f'正在爬取第{start}-{start + self.num}个(共{hotel_count}个).')
+                hotels = self.get_hotels(start)
+                self.save_list_to_mongo(hotels, 'seqNo')
+                time.sleep(settings.REQUEST_DELAY)
+                # comment
+                if self.crawl_comment:
+                    for hotel in hotels:
+                        HotelCommentCrawler(hotel['seqNo']).crawl()
+            except KeyError as e:
+                self.log.info(f'第{start}-{start + self.num}爬取失败: 返回数据格式错误')
+            except Exception as e:
+                self.log.info(f'第{start}-{start + self.num}爬取失败:,调用栈如下:')
+                traceback.print_exc()
 
     def get_hotel_count(self):
         try:
@@ -109,10 +132,17 @@ class HotelCrawler(Crawler):
 
     def get_hotels(self, start):
         json = self.get_hotels_json(start)
-        return json['data']['hotels']
+        hotels = json['data']['hotels']
+        for hotel in hotels:
+            hotel['city'] = self.city
+        return hotels
 
     def get_hotels_json(self, start):
         city_pinyin = ''.join(lazy_pinyin(self.city))
+        if city_pinyin in [
+            'beijing', 'shanghai', 'chongqing', 'tianjin'
+            ]:
+            city_pinyin += '_city'
         today = date.today()
         tomorrow = date.today() + timedelta(days=1)
         from_date = str(today)
@@ -168,28 +198,39 @@ class HotelCommentCrawler(Crawler):
         self.rating_stat_collection = self.mongo_database.hotel_comment_rating_stats
 
     def _crawl(self):
-        first_page = self.get_comment_page_json(1)
-        rating_stat = first_page['data']['ratingStat']
-        total_count = first_page['data']['count']
-        page_count = (total_count + 9) // 10
+        try:
+            first_page = self.get_comment_page_json(1)
+            rating_stat = first_page['data']['ratingStat']
+            total_count = first_page['data']['count']
+            page_count = (total_count + 9) // 10
+        except:
+            self.log.info(f'获取评论页数失败,将使用默认值2页')
+            page_count = 2
         max_page = settings.HOTEL_COMMENT_CRAWLER_MAX_PAGE
         if max_page > 0:
             page_count = min(max_page, page_count)
         self.save_rating_stat(rating_stat)
-        self.log.info(f'酒店{self.seq_no}一共有{total_count}条评论,将分{page_count}页爬取.')
+        self.log.info(f'酒店{self.seq_no}一共有{total_count}条评论,将爬取前{page_count}页.')
         for i in range(1, page_count + 1):
-            self.log.info(f'正在爬取第{i}/{page_count}页...')
-            json = self.get_comment_page_json(i)
-            for comment in json['data']['list']:
-                comment['seqNo'] = self.seq_no
-            self.save_list_to_mongo(json['data']['list'], 'feedOid')
+            try:
+                self.log.info(f'正在爬取第{i}/{page_count}页...')
+                json = self.get_comment_page_json(i)
+                for comment in json['data']['list']:
+                    comment['seqNo'] = self.seq_no
+                self.save_list_to_mongo(json['data']['list'], 'feedOid')
+            except KeyError as e:
+                self.log.info(f'第{i}页爬取失败: 返回数据格式错误')
+            except Exception as e:
+                self.log.info(f'第{i}页爬取失败:,调用栈如下:')
+                traceback.print_exc()
+
 
     def save_rating_stat(self, document):
         document['seqNo'] = self.seq_no
         if self.rating_stat_collection.count_documents({'seqNo': self.seq_no}) == 0:
             self.rating_stat_collection.insert_one(document)
         else:
-            self.log.debug(f'丢弃, seqNo: {self.seq_no}')
+            self.log.debug(f'去重丢弃, seqNo: {self.seq_no}')
 
     def save_one_to_mongo(self, document, pk):
         self.crawled_count += 1
@@ -197,7 +238,7 @@ class HotelCommentCrawler(Crawler):
             self.collection.insert_one(document)
             self.saved_count += 1
         else:
-            self.log.debug(f'丢弃, {pk}: {document[pk]}')
+            self.log.debug(f'去重丢弃, {pk}: {document[pk]}')
         pass
 
     def get_rating_stat(self):
@@ -225,7 +266,11 @@ class SightCrawler(Crawler):
 
     def _crawl(self):
         self.log.info(f'开始爬取关键字"{self.keyword}"...')
-        total_count, page_count = self.get_total_count_and_page_count()
+        try:
+            total_count, page_count = self.get_total_count_and_page_count()
+        except:
+            self.log.info(f'获取关键字景点数量失败，将使用默认值: 150条, 10页')
+            total_count, page_count = 150, 10
         self.log.info(f'共找到{total_count}条记录,将分{page_count}页爬取.')
         max_page = settings.SIGHT_CRAWLER_MAX_PAGE
         if max_page > 0:
@@ -234,10 +279,14 @@ class SightCrawler(Crawler):
         else:
             end_page = page_count
         for i in range(1, end_page + 1):
-            self.log.info(f'正在爬取第{i}/{end_page}页...')
-            sights = self.get_sights(i)
-            self.save_list_to_mongo(sights, 'sightId')
-            time.sleep(settings.REQUEST_DELAY)
+            try:
+                self.log.info(f'正在爬取第{i}/{end_page}页...')
+                sights = self.get_sights(i)
+                self.save_list_to_mongo(sights, 'sightId')
+                time.sleep(settings.REQUEST_DELAY)
+            except:
+                self.log.info(f'第{i}页爬取失败,失败原因:')
+                traceback.print_exc()
 
     def get_total_count_and_page_count(self):
         json = self.get_sights_json(page_num=1)
@@ -256,7 +305,10 @@ class SightCrawler(Crawler):
 
     def get_sights(self, page_num):
         json = self.get_sights_json(page_num)
-        return json['data']['sightList']
+        sights = json['data']['sightList']
+        for sight in sights:
+            sight['city'] = self.keyword
+        return sights
 
 
 
@@ -267,4 +319,3 @@ class SightCrawler(Crawler):
 #         crawler.crawl()
 #
 # crawl()
-

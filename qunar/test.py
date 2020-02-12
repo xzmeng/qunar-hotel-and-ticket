@@ -5,7 +5,8 @@ class Test:
 
     def only_hotel(self):
         keyword_list = [
-            '郑州', '武汉', '南京',
+            '北京', '天津', '上海', '重庆', '广州', '上海', '深圳',
+            '大理', '伊春', '石家庄', '济南', '秦皇岛', '三亚'
         ]
         for keyword in keyword_list:
             HotelCrawler(keyword).crawl()

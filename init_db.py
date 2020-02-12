@@ -39,6 +39,7 @@ def populate_hotels():
             Hotel.objects.create(
                 city=city,
                 seq_no=hotel.get('seqNo'),
+                name=hotel.get('name'),
                 price=int(hotel.get('price')),
                 gpoint=hotel.get('gpoint'),
                 dangci_text=hotel.get('dangciText'),
@@ -110,5 +111,8 @@ def populate_sights():
 
 
 if __name__ == '__main__':
-
+    populate_provinces_cities()
+    populate_hotels()
+    populate_ratings()
+    populate_comments()
     populate_sights()

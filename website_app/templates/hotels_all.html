@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>所有酒店~~</h1>
+    <ul class="list-group">
+        {% for hotel in hotels %}
+            <li class="list-group-item">
+                <a href="/hotel/{{ hotel.seq_no }}">{{ hotel.name }}</a>
+            </li>
+        {% endfor %}
+    </ul>
+{% endblock %}

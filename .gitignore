@@ -1,2 +1,9 @@
 __pycache__/
+
+# IDE or editor related
 .idea/
+.vscode/
+.history/
+
+# database
+*.sqlite3

@@ -3,10 +3,17 @@
 {% block content %}
     <h1>所有景点~~</h1>
     <ul class="list-group">
-        {% for sight in sights %}
-            <li class="list-group-item">
-                <a href="/sight/{{ sight.sight_id }}">{{ sight.name }}</a>
-            </li>
-        {% endfor %}
+        {% with collections=request.user.sights.all %}
+            {% for sight in sights %}
+                <li class="list-group-item">
+                    <a href="{% url 'qunar:sight_detail' sight.sight_id %}">{{ sight.name }}</a>
+                    {% if sight in collections %}
+                        <a class="btn btn-success disabled" href="{% url 'qunar:like_sight' sight.sight_id %}">已收藏</a>
+                    {% else %}
+                        <a class="btn btn-primary" href="{% url 'qunar:like_sight' sight.sight_id %}">收藏</a>
+                    {% endif %}
+                </li>
+            {% endfor %}
+        {% endwith %}
     </ul>
 {% endblock %}

@@ -1,0 +1,23 @@
+{% extends "layouts/default/page.html" %}
+
+{% block content %}
+    <h3>收藏的酒店~~~~</h3>
+    <ul class="list-group">
+        {% for hotel in hotels %}
+            <li class="list-group-item">
+                <a href="{% url 'qunar:hotel_detail' hotel.seq_no %}">{{ hotel.name }}</a>
+                <a class="btn btn-danger" href="{% url 'qunar:dislike_hotel' hotel.seq_no %}">取消收藏</a>
+            </li>
+        {% endfor %}
+    </ul>
+
+    <h3>收藏的景点~~</h3>
+    <ul class="list-group">
+        {% for sight in sights %}
+            <li class="list-group-item">
+                <a href="{% url 'qunar:sight_detail' sight.sight_id %}">{{ sight.name }}</a>
+                <a class="btn btn-danger" href="{% url 'qunar:dislike_sight' sight.sight_id %}">取消收藏</a>
+            </li>
+        {% endfor %}
+    </ul>
+{% endblock %}

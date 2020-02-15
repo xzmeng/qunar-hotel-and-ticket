@@ -3,10 +3,17 @@
 {% block content %}
     <h1>所有酒店~~</h1>
     <ul class="list-group">
-        {% for hotel in hotels %}
-            <li class="list-group-item">
-                <a href="/hotel/{{ hotel.seq_no }}">{{ hotel.name }}</a>
-            </li>
-        {% endfor %}
+        {% with collections=request.user.hotels.all %}
+            {% for hotel in hotels %}
+                <li class="list-group-item">
+                    <a href="{% url 'qunar:hotel_detail' hotel.seq_no %}">{{ hotel.name }}</a>
+                    {% if hotel in collections %}
+                        <a class="btn btn-success disabled" href="{% url 'qunar:like_hotel' hotel.seq_no %}">已收藏</a>
+                    {% else %}
+                        <a class="btn btn-primary" href="{% url 'qunar:like_hotel' hotel.seq_no %}">收藏</a>
+                    {% endif %}
+                </li>
+            {% endfor %}
+        {% endwith %}
     </ul>
 {% endblock %}

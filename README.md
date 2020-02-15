@@ -50,12 +50,12 @@
 ----------------
     $ python3 web/manage.py migrate
 
-MongoDB导入关系数据库数据库
+MongoDB导入关系数据库
 ------------------------
     $ python3 web/init_db.py
 运行服务器
 --------
-    $ python3 manage.py runserver
+    $ python3 web/manage.py runserver
 
 备注
 ---

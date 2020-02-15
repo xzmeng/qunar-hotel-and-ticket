@@ -1,3 +1,4 @@
+from django.contrib.auth.models import User
 from django.db import models
 
 
@@ -27,6 +28,8 @@ class Hotel(models.Model):
     dangci_text = models.CharField(max_length=20)
     dangci = models.IntegerField()
     image_url = models.CharField(max_length=1024)
+    user_liked = models.ManyToManyField(User,
+                                        related_name='hotels')
 
 
 class HotelRatingStat(models.Model):
@@ -61,7 +64,8 @@ class Sight(models.Model):
     price = models.FloatField()
     sale_count = models.IntegerField(default=0)
     image_url = models.CharField(max_length=1024)
-
+    users_liked = models.ManyToManyField(User,
+                                         related_name='sights')
 
 
 

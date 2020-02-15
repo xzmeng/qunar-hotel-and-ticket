@@ -50,6 +50,8 @@
                     {{ request.user.email }}
                 </a>
                 <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                    <a class="dropdown-item" href="{% url 'qunar:collections' %}">个人收藏</a>
+                    <div class="dropdown-divider"></div>
                     <a class="dropdown-item" href="{% url 'accounts:change_password' %}">{% trans 'Change password' %}</a>
                     <a class="dropdown-item" href="{% url 'accounts:change_profile' %}">{% trans 'Change profile' %}</a>
                     <a class="dropdown-item" href="{% url 'accounts:change_email' %}">{% trans 'Change email' %}</a>

@@ -14,6 +14,16 @@
     - [ ] 景点热度top排名(首页)
     - [ ] todo
 - [ ] 使用Django展示
+    - [ ] 用户
+        - [x] 用户注册
+        - [x] 用户登录
+        - [x] 用户个人信息查看修改
+        - [x] 用户账户通过邮箱激活
+        - [x] 用户密码通过邮箱重置
+        - [ ] 用户收藏夹
+    - [ ] 管理员
+        - [x] 管理员登录
+        - [x] 管理员管理用户
     - [X] 导航
     - [X] 显示所有酒店列表和详情
     - [X] 显示所有景点列表和景点详情
@@ -21,6 +31,7 @@
     - [ ] 酒店列表和酒店详情页
     - [ ] 景点列表和景点详情页
     - [ ] todo
+
     
 环境
 ------
@@ -34,14 +45,14 @@
 运行爬虫
 ------
     $ python3 crawl.py
+    
 初始化Django数据库
 ----------------
-    $ python3 manage.py makemigrations
-    $ python3 manage.py migrate
+    $ python3 web/manage.py migrate
 
 MongoDB导入关系数据库数据库
 ------------------------
-    $ python3 init_db.py
+    $ python3 web/init_db.py
 运行服务器
 --------
     $ python3 manage.py runserver

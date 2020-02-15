@@ -1,0 +1,12 @@
+{% extends "layouts/default/page.html" %}
+
+{% block content %}
+    <h1>所有景点~~</h1>
+    <ul class="list-group">
+        {% for sight in sights %}
+            <li class="list-group-item">
+                <a href="/sight/{{ sight.sight_id }}">{{ sight.name }}</a>
+            </li>
+        {% endfor %}
+    </ul>
+{% endblock %}

@@ -1,6 +1,6 @@
 from qunar.test import Test
 from qunar.crawler import HotelCrawler, SightCrawler
-from city.city import get_province_cities
+from web.utils.city import get_province_cities
 
 provinces = get_province_cities()
 
@@ -9,6 +9,7 @@ def crawl_hotels(crawl_comment=False):
     for province, cities in provinces.items():
         for city in cities:
             HotelCrawler(city, crawl_comment=crawl_comment).crawl()
+
 
 def crawl_sights():
     for province, cities in provinces.items():
@@ -32,4 +33,3 @@ if __name__ == '__main__':
 
     # 全国景点(很容易被封)
     # crawl_sights()
-

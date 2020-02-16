@@ -26,17 +26,10 @@ suffix_list = [
     "自治州",
 ]
 
-def get_province_cities():
-    provinces = get_province_cities_dict()
-    provinces = clean_city_name(provinces)
-    return provinces
 
-
-def get_province_cities_dict():
+def get_province_cities_dict(f):
     provinces = defaultdict(list)
-    with open('city/city.json') as f:
-        d = json.loads(f.read())
-
+    d = json.load(f)
     for id_, province in d.items():
         for city in province:
             province_name = city['province']
@@ -50,6 +43,7 @@ def get_province_cities_dict():
                 pass
             else:
                 provinces[province_name].append(city_name)
+    provinces = clean_city_name(provinces)
     return provinces
 
 
@@ -65,7 +59,8 @@ def clean_city_name(provinces):
 
 
 if __name__ == '__main__':
-    provinces = get_province_cities_dict()
-    # pprint(provinces)
-    provinces = clean_city_name(provinces)
-    pprint(provinces)
+    with open('city.json') as f:
+        provinces = get_province_cities_dict(f)
+
+    with open('province_cities.json', 'w') as f:
+        json.dump(provinces, f)

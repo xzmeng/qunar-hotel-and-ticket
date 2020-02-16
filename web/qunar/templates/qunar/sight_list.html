@@ -1,10 +1,14 @@
 {% extends "layouts/default/page.html" %}
 
 {% block content %}
-    <h1>所有景点~~</h1>
+    {% if city_name %}
+        <h3>{{ city_name }}的景点 !!</h3>
+    {% else %}
+        <h3>所有景点~~</h3>
+    {% endif %}
     <ul class="list-group">
         {% with collections=request.user.sights.all %}
-            {% for sight in sights %}
+            {% for sight in object_list %}
                 <li class="list-group-item">
                     <a href="{% url 'qunar:sight_detail' sight.sight_id %}">{{ sight.name }}</a>
                     {% if sight in collections %}
@@ -16,4 +20,6 @@
             {% endfor %}
         {% endwith %}
     </ul>
+    <br>
+    {% include 'qunar/pagination.html' %}
 {% endblock %}

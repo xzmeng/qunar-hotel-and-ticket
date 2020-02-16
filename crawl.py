@@ -1,9 +1,9 @@
 from qunar.test import Test
 from qunar.crawler import HotelCrawler, SightCrawler
-from web.utils.city import get_province_cities
+import json
 
-provinces = get_province_cities()
-
+with open('web/content/static/province_cities.json') as f:
+    provinces = json.load(f)
 
 def crawl_hotels(crawl_comment=False):
     for province, cities in provinces.items():

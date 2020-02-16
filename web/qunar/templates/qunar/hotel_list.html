@@ -1,10 +1,14 @@
 {% extends "layouts/default/page.html" %}
 
 {% block content %}
-    <h1>所有酒店~~</h1>
+    {% if city_name %}
+        <h3>{{ city_name }}的酒店~~</h3>
+    {% else %}
+        <h3>所有酒店~~</h3>
+    {% endif %}
     <ul class="list-group">
         {% with collections=request.user.hotels.all %}
-            {% for hotel in hotels %}
+            {% for hotel in object_list %}
                 <li class="list-group-item">
                     <a href="{% url 'qunar:hotel_detail' hotel.seq_no %}">{{ hotel.name }}</a>
                     {% if hotel in collections %}
@@ -16,4 +20,6 @@
             {% endfor %}
         {% endwith %}
     </ul>
+    <br>
+    {% include 'qunar/pagination.html' %}
 {% endblock %}

@@ -36,37 +36,79 @@
     <div class="collapse navbar-collapse" id="navbarsExampleDefault">
         <ul class="navbar-nav">
             <li class="nav-item">
-                <a class="nav-link" href="{% url 'qunar:hotels' %}">酒店</a>
+                <a class="nav-link" href="{% url 'qunar:hotels' 'all' %}">酒店</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="{% url 'qunar:sights' %}">景点</a>
+                <a class="nav-link" href="{% url 'qunar:sights' 'all' %}">景点</a>
+            </li>
+
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink"
+                   data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    酒店(城市)
+                </a>
+                <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                    {% for province, cities in province_cities.items %}
+                        <li class="dropdown-submenu">
+                            <a class="dropdown-item dropdown-toggle" href="#">{{ province }}</a>
+                            <ul class="dropdown-menu">
+                                {% for city in cities %}
+                                    <li><a class="dropdown-item" href="{% url 'qunar:hotels' city %}">{{ city }}</a></li>
+                                {% endfor %}
+                            </ul>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </li>
+
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink"
+                   data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    景点(城市)
+                </a>
+                <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                    {% for province, cities in province_cities.items %}
+                        <li class="dropdown-submenu">
+                            <a class="dropdown-item dropdown-toggle" href="#">{{ province }}</a>
+                            <ul class="dropdown-menu">
+                                {% for city in cities %}
+                                    <li><a class="dropdown-item" href="{% url 'qunar:sights' city %}">{{ city }}</a></li>
+                                {% endfor %}
+                            </ul>
+                        </li>
+                    {% endfor %}
+                </ul>
             </li>
         </ul>
         <ul class="navbar-nav ml-auto">
             {% if request.user.is_authenticated %}
-            <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
-                   aria-haspopup="true" aria-expanded="false">
-                    {{ request.user.email }}
-                </a>
-                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                    <a class="dropdown-item" href="{% url 'qunar:collections' %}">个人收藏</a>
-                    <div class="dropdown-divider"></div>
-                    <a class="dropdown-item" href="{% url 'accounts:change_password' %}">{% trans 'Change password' %}</a>
-                    <a class="dropdown-item" href="{% url 'accounts:change_profile' %}">{% trans 'Change profile' %}</a>
-                    <a class="dropdown-item" href="{% url 'accounts:change_email' %}">{% trans 'Change email' %}</a>
-                    <div class="dropdown-divider"></div>
-                    <a class="dropdown-item" href="{% url 'accounts:log_out' %}">{% trans 'Log out' %}</a>
-                </div>
-            </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                       data-toggle="dropdown"
+                       aria-haspopup="true" aria-expanded="false">
+                        {{ request.user.email }}
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <a class="dropdown-item" href="{% url 'qunar:collections' %}">个人收藏</a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item"
+                           href="{% url 'accounts:change_password' %}">{% trans 'Change password' %}</a>
+                        <a class="dropdown-item"
+                           href="{% url 'accounts:change_profile' %}">{% trans 'Change profile' %}</a>
+                        <a class="dropdown-item"
+                           href="{% url 'accounts:change_email' %}">{% trans 'Change email' %}</a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" href="{% url 'accounts:log_out' %}">{% trans 'Log out' %}</a>
+                    </div>
+                </li>
 
             {% else %}
-            <li class="nav-item">
-                <a class="nav-link" href="{% url 'accounts:log_in' %}">{% trans 'Log in' %}</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="{% url 'accounts:sign_up' %}">{% trans 'Create an account' %}</a>
-            </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'accounts:log_in' %}">{% trans 'Log in' %}</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'accounts:sign_up' %}">{% trans 'Create an account' %}</a>
+                </li>
             {% endif %}
         </ul>
 
@@ -79,7 +121,7 @@
     {% bootstrap_messages %}
 
     {% block content %}
-    No content.
+        No content.
     {% endblock %}
 
 </div>
@@ -89,6 +131,8 @@
 <script src="{% static 'vendor/bootstrap/js/bootstrap.min.js' %}"></script>
 
 <script src="{% static 'js/ie10-viewport-bug-workaround.js' %}"></script>
+
+<script src="{% static 'js/drop_down.js' %}"></script>
 
 </body>
 </html>

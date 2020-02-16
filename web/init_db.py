@@ -2,6 +2,7 @@ import json
 import os
 import django
 from pymongo import MongoClient
+from django.conf import settings
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE',
                       'app.settings')
@@ -9,13 +10,12 @@ django.setup()
 
 from qunar.models import Province, City, \
     Hotel, HotelComment, HotelRatingStat, Sight
-from utils.city import get_province_cities
 from django.db.utils import IntegrityError
+from qunar.utils import province_cities
 
 
 
 def populate_provinces_cities():
-    province_cities = get_province_cities()
     for province_name, cities in province_cities.items():
         try:
             Province.objects.create(name=province_name)

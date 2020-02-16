@@ -18,6 +18,7 @@ class City(models.Model):
 class Hotel(models.Model):
     city = models.ForeignKey(City,
                              on_delete=models.SET_NULL,
+                             related_name='hotels',
                              blank=True,
                              null=True)
     seq_no = models.CharField(max_length=50,
@@ -54,6 +55,7 @@ class HotelComment(models.Model):
 class Sight(models.Model):
     city = models.ForeignKey(City,
                              on_delete=models.SET_NULL,
+                             related_name='sights',
                              blank=True,
                              null=True)
     sight_id = models.IntegerField(primary_key=True)

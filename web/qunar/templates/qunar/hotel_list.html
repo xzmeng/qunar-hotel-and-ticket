@@ -6,20 +6,29 @@
     {% else %}
         <h3>所有酒店~~</h3>
     {% endif %}
-    <ul class="list-group">
-        {% with collections=request.user.hotels.all %}
-            {% for hotel in object_list %}
-                <li class="list-group-item">
-                    <a href="{% url 'qunar:hotel_detail' hotel.seq_no %}">{{ hotel.name }}</a>
-                    {% if hotel in collections %}
-                        <a class="btn btn-success disabled" href="{% url 'qunar:like_hotel' hotel.seq_no %}">已收藏</a>
-                    {% else %}
-                        <a class="btn btn-primary" href="{% url 'qunar:like_hotel' hotel.seq_no %}">收藏</a>
-                    {% endif %}
-                </li>
-            {% endfor %}
-        {% endwith %}
-    </ul>
+    <div class="row">
+        <div class="col">
+            <ul class="list-group">
+                {% with collections=request.user.hotels.all %}
+                    {% for hotel in object_list %}
+                        <li class="list-group-item d-flex">
+                            <a class="mr-auto" href="{% url 'qunar:hotel_detail' hotel.seq_no %}">{{ hotel.name }}</a>
+                            {% if hotel in collections %}
+                                <a class="btn btn-success disabled"
+                                   href="{% url 'qunar:like_hotel' hotel.seq_no %}">已收藏</a>
+                            {% else %}
+                                <a class="btn btn-primary" href="{% url 'qunar:like_hotel' hotel.seq_no %}">收藏</a>
+                            {% endif %}
+                        </li>
+                    {% endfor %}
+                {% endwith %}
+            </ul>
+        </div>
+        <div class="col">
+            <img src="{{ top_10_expensive_hotels_bar_url }}" alt="">
+            <img src="{{ hotels_price_histogram_url }}" alt="">
+        </div>
+    </div>
     <br>
     {% include 'qunar/pagination.html' %}
 {% endblock %}

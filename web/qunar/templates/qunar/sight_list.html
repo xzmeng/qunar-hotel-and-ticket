@@ -6,20 +6,28 @@
     {% else %}
         <h3>所有景点~~</h3>
     {% endif %}
-    <ul class="list-group">
-        {% with collections=request.user.sights.all %}
-            {% for sight in object_list %}
-                <li class="list-group-item">
-                    <a href="{% url 'qunar:sight_detail' sight.sight_id %}">{{ sight.name }}</a>
-                    {% if sight in collections %}
-                        <a class="btn btn-success disabled" href="{% url 'qunar:like_sight' sight.sight_id %}">已收藏</a>
-                    {% else %}
-                        <a class="btn btn-primary" href="{% url 'qunar:like_sight' sight.sight_id %}">收藏</a>
-                    {% endif %}
-                </li>
-            {% endfor %}
-        {% endwith %}
-    </ul>
+    <div class="row">
+        <div class="col">
+            <ul class="list-group list-group-flush">
+                {% with collections=request.user.sights.all %}
+                    {% for sight in object_list %}
+                        <li class="list-group-item d-flex">
+                            <a class="mr-auto" href="{% url 'qunar:sight_detail' sight.sight_id %}">{{ sight.name }}</a>
+                            {% if sight in collections %}
+                                <a class="btn btn-success disabled" href="{% url 'qunar:like_sight' sight.sight_id %}">已收藏</a>
+                            {% else %}
+                                <a class="btn btn-primary" href="{% url 'qunar:like_sight' sight.sight_id %}">收藏</a>
+                            {% endif %}
+                        </li>
+                    {% endfor %}
+                {% endwith %}
+            </ul>
+        </div>
+        <div class="col">
+            <img src="{{ top_10_sale_sights_bar_url }}" alt="">
+            <img src="{{ top_10_score_sights_bar_url }}" alt="">
+        </div>
+    </div>
     <br>
     {% include 'qunar/pagination.html' %}
 {% endblock %}

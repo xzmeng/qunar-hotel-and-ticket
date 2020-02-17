@@ -14,7 +14,6 @@ from django.db.utils import IntegrityError
 from qunar.utils import province_cities
 
 
-
 def populate_provinces_cities():
     for province_name, cities in province_cities.items():
         try:
@@ -53,20 +52,21 @@ def populate_hotels():
 
 def populate_ratings():
     mongo_client = MongoClient()
-    hotel_rating_stat = mongo_client.qunar.hotel_comment_rating_stat
+    hotel_rating_stat = mongo_client.qunar.hotel_comment_rating_stats
     for rating in hotel_rating_stat.find():
-        hotel = Hotel.objects.get(seq_no=rating.get('seqNo'))
-        if hotel:
-            try:
-                HotelRatingStat.objects.create(
-                    hotel=hotel,
-                    positive_count=rating.get('positiveCount'),
-                    neutral_count=rating.get('neutralCount'),
-                    negative_count=rating.get('negativeCount'),
-                )
-                print(f'酒店{hotel.get("seqNo")}好中差评数量插入成功!')
-            except IntegrityError:
-                print(f'酒店{hotel.get("seqNo")}的好中差评已经存在!')
+        try:
+            hotel = Hotel.objects.get(seq_no=rating.get('seqNo'))
+            HotelRatingStat.objects.create(
+                hotel=hotel,
+                positive_count=rating.get('positiveCount'),
+                neutral_count=rating.get('neutralCount'),
+                negative_count=rating.get('negativeCount'),
+            )
+            print(f'酒店{rating.get("seqNo")}好中差评数量插入成功!')
+        except IntegrityError:
+            print(f'酒店{rating.get("seqNo")}的好中差评已经存在!')
+        except Hotel.DoesNotExist:
+            print(f'酒店{rating.get("seqNo")}的不存在,评分插入失败！')
 
 
 def populate_comments():
@@ -86,6 +86,9 @@ def populate_comments():
             print(f'成功插入评论{comment.get("feedOid")}')
         except Hotel.DoesNotExist:
             print(f'酒店{comment.get("seqNo")}不存在!')
+        except IntegrityError:
+            print(f'评论{comment.get("feedOid")}已经存在!!')
+
 
 def populate_sights():
     mongo_client = MongoClient()
@@ -101,6 +104,7 @@ def populate_sights():
                 intro=sight.get('intro'),
                 point=sight.get('point'),
                 price=float(sight.get('qunarPrice') or '0'),
+                sale_count=(sight.get('saleCount')),
                 image_url=sight.get('sightImgURL'),
             )
             print(f'景点{sight.get("sightName")}插入成功!')
@@ -108,11 +112,9 @@ def populate_sights():
             print(f'景点{sight.get("sightName")}已经存在!')
 
 
-
-
 if __name__ == '__main__':
-    populate_provinces_cities()
-    populate_hotels()
+    # populate_provinces_cities()
+    # populate_hotels()
+    # populate_sights()
     populate_ratings()
-    populate_comments()
-    populate_sights()
+    # populate_comments()

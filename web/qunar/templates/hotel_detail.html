@@ -1,24 +1,32 @@
 {% extends "layouts/default/page.html" %}
 
 {% block content %}
-    <img src="{{ hotel.image_url }}" class="img-fluid" alt="Responsive image">
-    <table class="table">
-        <tbody>
-        <tr>
-            <th scope="row">酒店名字</th>
-            <td>{{ hotel.name }}</td>
-        </tr>
-        <tr>
-            <th scope="row">酒店价格</th>
-            <td>{{ hotel.price }}</td>
-        </tr>
-        <tr>
-            <th scope="row">酒店全球坐标</th>
-            <td>{{ hotel.gpoint }}</td>
-            <td>酒店档次</td>
-            <td>{{ hotel.dangci_text }}</td>
-        </tr>
-        </tbody>
-    </table>
+    <div class="row">
+        <div class="col">
+            <img src="{{ hotel.image_url }}" class="img-fluid" alt="Responsive image">
+            <table class="table">
+                <tbody>
+                <tr>
+                    <th scope="row">酒店名字</th>
+                    <td>{{ hotel.name }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">酒店价格</th>
+                    <td>{{ hotel.price }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">酒店全球坐标</th>
+                    <td>{{ hotel.gpoint }}</td>
+                    <td>酒店档次</td>
+                    <td>{{ hotel.dangci_text }}</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="col">
+            <img src="{{ rating_pie_url }}" alt="">
+        </div>
+    </div>
+
 
 {% endblock %}

@@ -17,6 +17,7 @@ def crawl_sights():
             SightCrawler(city).crawl()
 
 
+
 if __name__ == '__main__':
     test = Test()
 

@@ -11,3 +11,15 @@ __pycache__/
 # temporary email
 tmp/
 
+# for function test
+mytest.py
+.ipynb
+
+# media file
+web/content/media/
+
+# environment
+venv/
+
+# jupyter
+.ipynb_checkpoints/

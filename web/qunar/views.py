@@ -4,6 +4,8 @@ from django.contrib.auth.models import User
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views.generic import ListView
 
+from charts import HotelRatingPie, Top10SaleSightsBar, Top10ScoreSightsBar, \
+    Top10ExpensiveHotelsBar, HotelPriceHistogram
 from .models import Hotel, Sight, City
 from .utils import province_cities
 
@@ -13,7 +15,7 @@ def index(request):
 
 
 class HotelList(ListView):
-    paginate_by = 10
+    paginate_by = 20
 
     def get_queryset(self):
         city_name = self.kwargs['city_name']
@@ -26,13 +28,18 @@ class HotelList(ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        if self.kwargs['city_name'] != 'all':
+        city_name = self.kwargs['city_name']
+        context['top_10_expensive_hotels_bar_url'] = \
+            Top10ExpensiveHotelsBar(city_name).url
+        context['hotels_price_histogram_url'] = \
+            HotelPriceHistogram(city_name).url
+        if city_name != 'all':
             context['city_name'] = self.kwargs['city_name']
         return context
 
 
 class SightList(ListView):
-    paginate_by = 10
+    paginate_by = 20
 
     def get_queryset(self):
         city_name = self.kwargs['city_name']
@@ -45,15 +52,20 @@ class SightList(ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        if self.kwargs['city_name'] != 'all':
+        city_name = self.kwargs['city_name']
+        context['top_10_sale_sights_bar_url'] = Top10SaleSightsBar(city_name).url
+        context['top_10_score_sights_bar_url'] = Top10ScoreSightsBar(city_name).url
+        if city_name != 'all':
             context['city_name'] = self.kwargs['city_name']
         return context
 
 
 def hotel_detail(request, seq_no):
     hotel = Hotel.objects.get(seq_no=seq_no)
+    rating_pie_url = HotelRatingPie(hotel.seq_no).url
     return render(request, 'hotel_detail.html',
-                  {'hotel': hotel})
+                  {'hotel': hotel,
+                   'rating_pie_url': rating_pie_url})
 
 
 def sight_detail(request, sight_id):
@@ -106,3 +118,5 @@ def dislike_sight(request, sight_id):
     user.sights.remove(sight)
     messages.info(request, '取消成功')
     return redirect('qunar:collections')
+
+

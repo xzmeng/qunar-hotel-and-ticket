@@ -7,6 +7,7 @@
 <!DOCTYPE html>
 <html lang="{{ language_code }}">
 <head>
+    {% block head %}
 
     <meta charset="utf-8">
 
@@ -20,6 +21,7 @@
 
     <link href="{% static 'vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
     <link href="{% static 'css/styles.css' %}" rel="stylesheet">
+    {% endblock %}
 
 </head>
 
@@ -73,6 +75,27 @@
                             <ul class="dropdown-menu">
                                 {% for city in cities %}
                                     <li><a class="dropdown-item" href="{% url 'qunar:sights' city %}">{{ city }}</a></li>
+                                {% endfor %}
+                            </ul>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'qunar:hot_map' %}">热力图</a>
+            </li>
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink"
+                   data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    热力图(城市)
+                </a>
+                <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                    {% for province, cities in province_cities.items %}
+                        <li class="dropdown-submenu">
+                            <a class="dropdown-item dropdown-toggle" href="#">{{ province }}</a>
+                            <ul class="dropdown-menu">
+                                {% for city in cities %}
+                                    <li><a class="dropdown-item" href="{% url 'qunar:hot_map' %}?city_name={{ city }}">{{ city }}</a></li>
                                 {% endfor %}
                             </ul>
                         </li>

@@ -119,4 +119,5 @@ def dislike_sight(request, sight_id):
     messages.info(request, '取消成功')
     return redirect('qunar:collections')
 
-
+def hot_map(request):
+    return render(request, 'qunar/hot_map.html')

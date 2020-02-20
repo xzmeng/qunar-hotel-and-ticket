@@ -1,6 +1,6 @@
 from django.urls import path
 
-from . import views
+from . import views, api
 
 app_name = 'qunar'
 
@@ -17,6 +17,9 @@ urlpatterns = [
     path('sight/<int:sight_id>', views.sight_detail, name='sight_detail'),
     path('sight/<int:sight_id>/like', views.like_sight, name='like_sight'),
     path('sight/<int:sight_id>/dislike', views.dislike_sight, name='dislike_sight'),
-    path('collections', views.collections, name='collections')
+    path('collections', views.collections, name='collections'),
+
+    path('hot-map', views.hot_map, name='hot_map'),
+    path('api/sight_points/', api.get_sight_points, name='sight_points'),
 ]
 

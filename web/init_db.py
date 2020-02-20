@@ -113,8 +113,8 @@ def populate_sights():
 
 
 if __name__ == '__main__':
-    # populate_provinces_cities()
-    # populate_hotels()
-    # populate_sights()
+    populate_provinces_cities()
+    populate_hotels()
+    populate_sights()
     populate_ratings()
-    # populate_comments()
+    populate_comments()

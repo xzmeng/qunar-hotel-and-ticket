@@ -58,7 +58,7 @@ class Sight(models.Model):
                              related_name='sights',
                              blank=True,
                              null=True)
-    sight_id = models.IntegerField(primary_key=True)
+    sight_id = models.BigIntegerField(primary_key=True)
     name = models.CharField(max_length=100)
     score = models.FloatField(default=0.0)
     intro = models.CharField(max_length=1024)

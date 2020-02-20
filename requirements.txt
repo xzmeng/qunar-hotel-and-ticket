@@ -2,3 +2,4 @@ requests
 pymongo
 django
 django-bootstrap4
+mysqlclient
